@@ -1,8 +1,6 @@
 # Steve Cutter's ARR Stack
 
-One-command automated media server with VPN protection. Sonarr, Radarr, Prowlarr, qBittorrent, Gluetun, Jellyfin, and more.
-
-**Full video tutorial:** [YouTube Link Coming Soon]
+One-command automated media server with VPN protection. Sonarr, Radarr, Prowlarr, qBittorrent, SABnzbd, Gluetun, Jellyfin, and more.
 
 ## What You Get
 
