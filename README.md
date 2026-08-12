@@ -48,10 +48,12 @@ This creates:
 /data/
 ├── torrents/     ← qBittorrent downloads here
 │   ├── movies/
-│   └── tv/
+│   ├── tv/
+│   └── incomplete/
 ├── usenet/     ← SABnzbd downloads here
 │   ├── movies/
-│   └── tv/ 
+│   ├── tv/
+│   └── incomplete/ 
 └── media/        ← Radarr/Sonarr organize files here (Jellyfin reads from here)
     ├── movies/
     └── tv/
