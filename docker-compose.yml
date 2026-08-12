@@ -81,7 +81,7 @@ services:
       - PGID=${PGID}
       - TZ=${TZ}
     volumes:
-      - ./sabnzbd/config:/config
+      - ./sabnzbd:/config
       - /data:/data
     ports:
       - 8091:8080
