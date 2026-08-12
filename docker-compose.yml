@@ -1,5 +1,10 @@
 # Steve Cutter's ARR Stack — Automated Media Server
 #
+# Usage:
+#   1. Copy .env.example to .env and fill in your VPN credentials
+#   2. Run: bash setup-folders.sh
+#   3. Run: docker compose up -d
+#
 # All VPN-protected services (qBittorrent, Prowlarr, FlareSolverr) run
 # through Gluetun. If the VPN drops, traffic stops. Zero leaks.
 #
