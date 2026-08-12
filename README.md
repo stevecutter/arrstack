@@ -1,14 +1,4 @@
-> ## ⚡ Want the easy, full version? → **[SparkBox](https://tomsparkbox.com)**
->
-> This is one of my original one-shot scripts. It still works — but these days everything I build goes into **[SparkBox](https://tomsparkbox.com)**: a free, self-hosted home server that sets up this whole stack (and a lot more — photos, files, password manager, ad-blocking) with **one command**, a real web dashboard, automatic updates with one-click rollback, and a built-in AI assistant that troubleshoots and fixes things for you. No hand-editing config files.
->
-> ### 👉 Get it free at **[tomsparkbox.com](https://tomsparkbox.com)**
->
-> _Built by [Tom Spark Reviews](https://youtube.com/@TomSparkReviews)._
-
----
-
-# Tom Spark's ARR Stack
+# Steve Cutter's ARR Stack
 
 One-command automated media server with VPN protection. Sonarr, Radarr, Prowlarr, qBittorrent, Gluetun, Jellyfin, and more.
 
@@ -20,6 +10,7 @@ One-command automated media server with VPN protection. Sonarr, Radarr, Prowlarr
 |---------|------|---------|
 | Gluetun | — | VPN tunnel with kill switch |
 | qBittorrent | 8080 | Torrent client (VPN protected) |
+| SABnzbd | 8091 | Usenet client/Newsreader (no VPN) |
 | Prowlarr | 9696 | Indexer manager (VPN protected) |
 | FlareSolverr | 8191 | Cloudflare bypass (VPN protected) |
 | Radarr | 7878 | Movie automation |
@@ -29,7 +20,7 @@ One-command automated media server with VPN protection. Sonarr, Radarr, Prowlarr
 | Jellyfin | 8096 | Media server / streaming |
 | Seerr | 5055 | Netflix-like request UI (Overseerr/Jellyseerr successor) |
 
-All download traffic routes through Gluetun's VPN tunnel. If the VPN drops, all traffic stops — zero leaks. The deunhealth container auto-restarts services that become unhealthy.
+All qBittorrent download traffic routes through Gluetun's VPN tunnel. If the VPN drops, all traffic stops — zero leaks. The deunhealth container auto-restarts services that become unhealthy.
 
 ## Quick Start
 
@@ -44,7 +35,7 @@ sudo usermod -aG docker $USER
 ### 2. Clone this repo
 
 ```bash
-git clone https://github.com/loponai/arrstack.git
+git clone https://github.com/stevecutter/arrstack.git
 cd arrstack
 ```
 
@@ -59,15 +50,16 @@ This creates:
 /data/
 ├── torrents/     ← qBittorrent downloads here
 │   ├── movies/
-│   ├── tv/
-│   └── music/
+│   └── tv/
+├── usenet/     ← SABnzbd downloads here
+│   ├── movies/
+│   └── tv/ 
 └── media/        ← Radarr/Sonarr organize files here (Jellyfin reads from here)
     ├── movies/
-    ├── tv/
-    └── music/
+    └── tv/
 ```
 
-> **Hard links:** Both folders MUST be on the same drive/filesystem. Radarr and Sonarr create hard links (not copies) — the file appears in both locations but only uses disk space once.
+> **Hard links:** All folders MUST be on the same drive/filesystem. Radarr and Sonarr create hard links (not copies) — the file appears in both locations but only uses disk space once.
 
 ### 4. Configure your VPN
 
@@ -110,6 +102,7 @@ Open each service in your browser at `http://YOUR-SERVER-IP:PORT` and follow the
 
 **Quick reference:**
 - **qBittorrent** (`:8080`) — Get temp password: `docker logs qbittorrent 2>&1 | grep "temporary password"`
+- **SABnzbd** (`:8091`) — Create login in web UI settings. Similar setup to qBittorrent, correctly point completed download folder to `/data/usenet`, temporary download folder to `/data/usenet/incomplete`, categories to `/data/usenet/movies` for movies, and `/data/usenet/tv` for tv.
 - **Prowlarr** (`:9696`) — Add indexers, connect to Radarr/Sonarr. If an indexer is blocked by Cloudflare, set up FlareSolverr as a proxy: Settings → Indexers → Add Proxy → FlareSolverr → host `http://localhost:8191` → give it a tag (e.g. `flaresolverr`). Then edit the blocked indexer and add the **same tag** so Prowlarr routes it through FlareSolverr.
 - **Radarr** (`:7878`) — Root folder: `/data/media/movies`, download client category: `movies`
 - **Sonarr** (`:8989`) — Root folder: `/data/media/tv`, download client category: `tv`
@@ -127,11 +120,13 @@ Open each service in your browser at `http://YOUR-SERVER-IP:PORT` and follow the
 | `172.39.0.6` | Bazarr |
 | `172.39.0.7` | Jellyfin |
 | `172.39.0.8` | Seerr |
+| `172.39.0.9` | SABnzbd |
 
 These IPs are the same for everyone — they're hardcoded in the docker-compose file.
 
 **Common connections:**
 - Radarr/Sonarr → Download Client → qBittorrent: host `172.39.0.2`, port `8080`
+- Radarr/Sonarr → Download Client → SABnzbd: host `172.39.0.9`, port `8080`
 - Prowlarr → Apps → Radarr: server `http://172.39.0.3:7878`
 - Prowlarr → Apps → Sonarr: server `http://172.39.0.4:8989`
 - Prowlarr → Apps → Prowlarr Server: `http://172.39.0.2:9696`
@@ -142,6 +137,12 @@ These IPs are the same for everyone — they're hardcoded in the docker-compose 
 **Important Radarr/Sonarr settings:**
 - Media Management → Show Advanced → **Use Hardlinks instead of Copy** → must be ON
 - Media Management → **Rename Movies/Episodes** → recommended ON
+
+**Important SABnzbd configuration:**
+WARNING: Radarr/Sonarr will fail to connect to the SABnzbd client without this config
+- Edit `sabnzbd.ini` in `/arrstack/sabnzbd/config`
+- Next to `local_ranges`, add the arrstack network subnet and the host's subnet (i.e. `local_ranges = 172.39.0.0/24, {your host subnet}`)
+- IF your SABnzbd is sitting behind a reverse proxy, add the chosen domain next to `host_whitelist` (i.e `host_whitelist = 3fd31549cc61, sabnzbd.example.com`)
 
 **Recommended quality profile (1080p baseline, 4K preferred):**
 
@@ -493,6 +494,6 @@ If both IPs are the same, your VPN isn't working — check Gluetun logs with `do
 
 ## Credits
 
-Built by [Tom Spark](https://youtube.com/@tomspark) following [Trash Guides](https://trash-guides.info/) and [Servarr Wiki](https://wiki.servarr.com/) best practices.
+Simple fork of [Tom Spark's initial oneshot repo](https://youtube.com/@tomspark) to include SABnzbd for optional Usenet downloads.
 
 Uses [Gluetun](https://github.com/qdm12/gluetun) for VPN, [LinuxServer.io](https://linuxserver.io) container images, and [Seerr](https://github.com/seerr-team/seerr) for the request system (the unified successor to Overseerr/Jellyseerr).
