@@ -19,8 +19,10 @@ echo.
 
 mkdir "%DATA_DIR%\torrents\movies" 2>nul
 mkdir "%DATA_DIR%\torrents\tv" 2>nul
+mkdir "%DATA_DIR%\torrents\incomplete" 2>nul
 mkdir "%DATA_DIR%\usenet\movies" 2>nul
 mkdir "%DATA_DIR%\usenet\tv" 2>nul
+mkdir "%DATA_DIR%\usenet\incomplete" 2>nul
 mkdir "%DATA_DIR%\media\movies" 2>nul
 mkdir "%DATA_DIR%\media\tv" 2>nul
 
@@ -30,9 +32,11 @@ echo   %DATA_DIR%\
 echo   +-- torrents\
 echo   ¦   +-- movies\
 echo   ¦   +-- tv\
+echo   ¦   +-- incomplete\
 echo   +-- usenet\
 echo   ¦   +-- movies\
 echo   ¦   +-- tv\
+echo   ¦   +-- incomplete\
 echo   +-- media\
 echo       +-- movies\
 echo       +-- tv\
