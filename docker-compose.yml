@@ -1,15 +1,9 @@
-# Tom Spark's ARR Stack — Automated Media Server
-# https://github.com/loponai/arrstack
-#
-# Usage:
-#   1. Copy .env.example to .env and fill in your VPN credentials
-#   2. Run: bash setup-folders.sh
-#   3. Run: docker compose up -d
+# Steve Cutter's ARR Stack — Automated Media Server
 #
 # All VPN-protected services (qBittorrent, Prowlarr, FlareSolverr) run
 # through Gluetun. If the VPN drops, traffic stops. Zero leaks.
 #
-# Radarr, Sonarr, Lidarr, Bazarr, Jellyfin, and Seerr do NOT run through
+# Radarr, Sonarr, Lidarr, Bazarr, Jellyfin, SABnzbd and Seerr do NOT run through
 # the VPN — they need direct network access for speed and local connectivity.
 
 networks:
@@ -69,7 +63,28 @@ services:
       timeout: 10s
       retries: 5
     restart: unless-stopped
-
+  
+  # ============================================================
+  # SABnzbd  — Usenet client (NOT behind VPN)
+  # Communicates with chosen provider for Usenet indexes/traffic.
+  # ============================================================
+  sabnzbd:
+    image: lscr.io/linuxserver/sabnzbd:latest
+    container_name: sabnzbd
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    volumes:
+      - ./sabnzbd/config:/config
+      - /data:/data
+    ports:
+      - 8091:8080
+    networks:
+      arrnetwork:
+        ipv4_address: ${IP_SABNZBD}
+    restart: unless-stopped
+  
   # ============================================================
   # QBITTORRENT — Torrent Client (runs through Gluetun VPN)
   # ALL traffic goes through the VPN tunnel. No direct internet.
@@ -199,28 +214,6 @@ services:
     networks:
       arrnetwork:
         ipv4_address: ${IP_SONARR}
-    restart: unless-stopped
-
-  # ============================================================
-  # LIDARR — Music Manager (NOT behind VPN)
-  # Optional. Comment out if you don't need music automation.
-  # ============================================================
-  lidarr:
-    image: lscr.io/linuxserver/lidarr:latest
-    container_name: lidarr
-    environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
-      - UMASK=002
-      - TZ=${TZ}
-    volumes:
-      - ./lidarr:/config
-      - /data:/data
-    ports:
-      - 8686:8686
-    networks:
-      arrnetwork:
-        ipv4_address: ${IP_LIDARR}
     restart: unless-stopped
 
   # ============================================================
