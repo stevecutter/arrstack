@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
-# Tom Spark's ARR Stack — Folder Structure Setup
-# https://github.com/loponai/arrstack
+# Steve Cutter's ARR Stack — Folder Structure Setup
+# https://github.com/stevecutter/arrstack
 #
 # Creates the /data directory structure required for hard links
 # to work correctly. Run this ONCE before starting the stack.
@@ -14,7 +14,7 @@ set -e
 DATA_DIR="/data"
 
 echo ""
-echo "=== Tom Spark's ARR Stack — Folder Setup ==="
+echo "=== Steve Cutter's ARR Stack — Folder Setup ==="
 echo ""
 echo "This will create the following structure:"
 echo ""
@@ -22,11 +22,14 @@ echo "  /data/"
 echo "  ├── torrents/"
 echo "  │   ├── movies/"
 echo "  │   ├── tv/"
-echo "  │   └── music/"
+echo "  │   └── incomplete/"
+echo "  ├── usenet/"
+echo "  │   ├── movies/"
+echo "  │   ├── tv/"
+echo "  │   └── incomplete/"
 echo "  └── media/"
 echo "      ├── movies/"
-echo "      ├── tv/"
-echo "      └── music/"
+echo "      └── tv/"
 echo ""
 
 # Check if running as root
@@ -42,7 +45,7 @@ REAL_UID=$(id -u "$REAL_USER")
 REAL_GID=$(id -g "$REAL_USER")
 
 echo "Creating folders..."
-mkdir -p "$DATA_DIR"/{torrents/{movies,tv,music},media/{movies,tv,music}}
+mkdir -p "$DATA_DIR"/{torrents/{movies,tv,incomplete},usenet/{movies,tv,incomplete},media/{movies,tv}}
 
 echo "Setting ownership to $REAL_USER ($REAL_UID:$REAL_GID)..."
 chown -R "$REAL_UID":"$REAL_GID" "$DATA_DIR"
