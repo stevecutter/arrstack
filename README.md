@@ -496,6 +496,6 @@ If both IPs are the same, your VPN isn't working — check Gluetun logs with `do
 
 ## Credits
 
-Simple fork of [Tom Spark's initial oneshot repo](https://youtube.com/@tomspark) to include SABnzbd for optional Usenet downloads.
+Simple fork of [Tom Spark's initial oneshot repo](https://github.com/loponai/arrstack) to include SABnzbd for optional Usenet downloads.
 
 Uses [Gluetun](https://github.com/qdm12/gluetun) for VPN, [LinuxServer.io](https://linuxserver.io) container images, and [Seerr](https://github.com/seerr-team/seerr) for the request system (the unified successor to Overseerr/Jellyseerr).
