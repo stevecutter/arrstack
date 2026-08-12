@@ -1,7 +1,7 @@
 #!/bin/bash
 # ============================================================
-# Tom Spark's ARR Stack — Health Check & Troubleshooting
-# https://github.com/loponai/arrstack
+# Steve Cutter's ARR Stack — Health Check & Troubleshooting
+# https://github.com/stevecutter/arrstack
 #
 # Run this after 'docker compose up -d' to verify everything
 # is working correctly. It checks each service, tests VPN
@@ -34,9 +34,9 @@ header() { echo -e "\n${CYAN}${BOLD}[$1]${NC}"; }
 fix() { echo -e "         ${YELLOW}Fix: $1${NC}"; }
 
 echo ""
-echo "========================================="
-echo "  Tom Spark's ARR Stack — Health Check"
-echo "========================================="
+echo "============================================"
+echo "  Steve Cutter's ARR Stack — Health Check"
+echo "============================================"
 echo ""
 
 # ============================================================
@@ -87,7 +87,7 @@ fi
 header "Folder Structure"
 
 ALL_FOLDERS_OK=true
-for dir in /data/torrents/movies /data/torrents/tv /data/torrents/music /data/media/movies /data/media/tv /data/media/music; do
+for dir in /data/torrents/movies /data/torrents/tv /data/torrents/incomplete /data/usenet/movies /data/usenet/tv /data/usenet/incomplete /data/media/movies /data/media/tv; do
     if [ -d "$dir" ]; then
         pass "$dir exists"
     else
@@ -117,7 +117,7 @@ fi
 # ============================================================
 header "Containers"
 
-EXPECTED_SERVICES="gluetun qbittorrent deunhealth prowlarr flaresolverr radarr sonarr lidarr bazarr jellyfin seerr"
+EXPECTED_SERVICES="gluetun qbittorrent sabnzbd deunhealth prowlarr flaresolverr radarr sonarr bazarr jellyfin seerr"
 
 for svc in $EXPECTED_SERVICES; do
     STATUS=$(docker inspect --format '{{.State.Status}}' "$svc" 2>/dev/null)
@@ -269,10 +269,10 @@ check_http() {
 }
 
 check_http qbittorrent 8080
+check_http sabnzbd 8091
 check_http prowlarr 9696
 check_http radarr 7878
 check_http sonarr 8989
-check_http lidarr 8686
 check_http bazarr 6767
 check_http jellyfin 8096
 check_http seerr 5055
@@ -284,14 +284,23 @@ header "Hard Links"
 
 if [ -d /data/torrents ] && [ -d /data/media ]; then
     # Check if same filesystem
-    FS_TORRENTS=$(df /data/torrents --output=source 2>/dev/null | tail -1)
+    FS_TORRENTS=$(df /data/usenet --output=source 2>/dev/null | tail -n +2)
+    FS_USENET=$(df /data/usenet --output=source 2>/dev/null | tail -n +2)
     FS_MEDIA=$(df /data/media --output=source 2>/dev/null | tail -1)
 
     if [ "$FS_TORRENTS" = "$FS_MEDIA" ]; then
         pass "torrents/ and media/ are on the same filesystem ($FS_TORRENTS)"
-        pass "Hard links will work correctly"
     else
         fail "torrents/ ($FS_TORRENTS) and media/ ($FS_MEDIA) are on DIFFERENT filesystems!"
+        fix "Hard links only work on the same filesystem/drive"
+        fix "Move both directories to the same drive"
+    fi
+
+    if [ "$FS_USENET" = "$FS_MEDIA" ]; then
+        pass "usenet/ and media/ are on the same filesystem ($FS_USENET)"
+        pass "Hard links will work correctly"
+    else
+        fail "usenet/ ($FS_USENET) and media/ ($FS_MEDIA) are on DIFFERENT filesystems!"
         fix "Hard links only work on the same filesystem/drive"
         fix "Move both directories to the same drive"
     fi
