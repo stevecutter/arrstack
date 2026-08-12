@@ -142,9 +142,9 @@ These IPs are the same for everyone — they're hardcoded in the docker-compose 
 
 *WARNING: Radarr/Sonarr will fail to connect to the SABnzbd client without this config*
 
-- Edit `sabnzbd.ini` in `/arrstack/sabnzbd/config`
+- Edit `sabnzbd.ini` in `/arrstack/sabnzbd`
 - Next to `local_ranges`, add the arrstack network subnet and the host's subnet (i.e. `local_ranges = 172.39.0.0/24, {your host subnet}`)
-- IF your SABnzbd is sitting behind a reverse proxy, add the chosen domain next to `host_whitelist` (i.e `host_whitelist = 3fd31549cc61, sabnzbd.example.com`)
+- IF your SABnzbd sits behind a reverse proxy, add the chosen domain next to `host_whitelist` (i.e `host_whitelist = 3fd31549cc61, sabnzbd.example.com`)
 
 **Recommended quality profile (1080p baseline, 4K preferred):**
 
