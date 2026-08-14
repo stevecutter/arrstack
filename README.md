@@ -13,7 +13,6 @@ One-command automated media server with VPN protection. Sonarr, Radarr, Prowlarr
 | FlareSolverr | 8191 | Cloudflare bypass (VPN protected) |
 | Radarr | 7878 | Movie automation |
 | Sonarr | 8989 | TV show automation |
-| Lidarr | 8686 | Music automation |
 | Bazarr | 6767 | Subtitle automation |
 | Jellyfin | 8096 | Media server / streaming |
 | Seerr | 5055 | Netflix-like request UI (Overseerr/Jellyseerr successor) |
