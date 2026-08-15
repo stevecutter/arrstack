@@ -127,7 +127,7 @@ services:
   # If qBittorrent loses VPN connection, this restarts it automatically.
   # ============================================================
   deunhealth:
-    image: qmcgaw/deunhealth
+    image: qmcgaw/deunhealth:latest
     container_name: deunhealth
     network_mode: none
     environment:
@@ -290,7 +290,7 @@ services:
   # troubleshooting "Migrating Seerr config to a named volume".
   # ============================================================
   seerr:
-    image: ghcr.io/seerr-team/seerr:v3.0.1
+    image: ghcr.io/seerr-team/seerr:latest
     init: true
     container_name: seerr
     environment:
